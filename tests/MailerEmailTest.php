@@ -14,11 +14,13 @@ final class MailerEmailTest extends TestCase
         $email = (new MailerEmail())
             ->template('welcome')
             ->templateData(['name' => 'Jane'])
+            ->metadata(['order_id' => 'o_9'])
             ->idempotencyKey('idem-1');
 
         $headers = $email->getHeaders();
         self::assertSame('welcome', $headers->getHeaderBody(MailerEmail::HEADER_TEMPLATE));
         self::assertSame('{"name":"Jane"}', $headers->getHeaderBody(MailerEmail::HEADER_DATA));
+        self::assertSame('{"order_id":"o_9"}', $headers->getHeaderBody(MailerEmail::HEADER_METADATA));
         self::assertSame('idem-1', $headers->getHeaderBody(MailerEmail::HEADER_IDEMPOTENCY_KEY));
     }
 

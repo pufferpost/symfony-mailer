@@ -42,21 +42,29 @@ final class ApiTransport extends AbstractTransport
             throw new TransportException('The mailer API requires a template; set it via MailerEmail::template().');
         }
 
-        $data = [];
-        $rawData = $this->header($email, MailerEmail::HEADER_DATA);
-        if (null !== $rawData) {
-            $decoded = json_decode($rawData, true);
-            if (\is_array($decoded)) {
-                $data = $decoded;
-            }
-        }
-
+        $data = $this->jsonHeader($email, MailerEmail::HEADER_DATA);
+        $metadata = $this->jsonHeader($email, MailerEmail::HEADER_METADATA);
         $idempotencyKey = $this->header($email, MailerEmail::HEADER_IDEMPOTENCY_KEY);
         $from = $envelope->getSender()->getAddress();
 
         foreach ($envelope->getRecipients() as $recipient) {
-            $this->client->send(new ApiEmail($from, $recipient->getAddress(), $template, $data), $idempotencyKey);
+            $this->client->send(new ApiEmail($from, $recipient->getAddress(), $template, $data, $metadata), $idempotencyKey);
         }
+    }
+
+    /**
+     * @return array<array-key, mixed>
+     */
+    private function jsonHeader(Email $email, string $name): array
+    {
+        $raw = $this->header($email, $name);
+        if (null === $raw) {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+
+        return \is_array($decoded) ? $decoded : [];
     }
 
     public function __toString(): string

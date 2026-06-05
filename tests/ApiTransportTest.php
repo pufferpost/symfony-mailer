@@ -38,6 +38,7 @@ final class ApiTransportTest extends TestCase
             ->text('Welcome!')
             ->template('welcome')
             ->templateData(['name' => 'Jane'])
+            ->metadata(['order_id' => 'o_9'])
             ->idempotencyKey('idem-1');
 
         $this->transport()->send($email);
@@ -48,7 +49,7 @@ final class ApiTransportTest extends TestCase
 
         $body = json_decode((string) $this->requests[0]['options']['body'], true);
         self::assertSame(
-            ['from' => 'no-reply@acme.com', 'to' => 'jane@example.com', 'template' => 'welcome', 'data' => ['name' => 'Jane']],
+            ['from' => 'no-reply@acme.com', 'to' => 'jane@example.com', 'template' => 'welcome', 'data' => ['name' => 'Jane'], 'metadata' => ['order_id' => 'o_9']],
             $body,
         );
         $headers = $this->requests[0]['options']['headers'] ?? [];

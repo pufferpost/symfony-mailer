@@ -15,6 +15,7 @@ final class MailerEmail extends Email
 {
     public const HEADER_TEMPLATE = 'X-Mailer-Template';
     public const HEADER_DATA = 'X-Mailer-Data';
+    public const HEADER_METADATA = 'X-Mailer-Metadata';
     public const HEADER_IDEMPOTENCY_KEY = 'X-Mailer-Idempotency-Key';
 
     public function template(string $template): static
@@ -28,6 +29,14 @@ final class MailerEmail extends Email
     public function templateData(array $data): static
     {
         return $this->setHeader(self::HEADER_DATA, json_encode($data, \JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * @param array<string, string> $metadata
+     */
+    public function metadata(array $metadata): static
+    {
+        return $this->setHeader(self::HEADER_METADATA, json_encode($metadata, \JSON_THROW_ON_ERROR));
     }
 
     public function idempotencyKey(string $key): static

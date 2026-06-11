@@ -1,12 +1,12 @@
 {
-    "name": "jeroenmoonen/mailer-symfony",
+    "name": "pufferpost/symfony-mailer",
     "description": "Symfony Mailer transport for the EU-first transactional email API (ADR-0037).",
     "type": "library",
     "keywords": ["email", "transactional", "symfony", "mailer", "transport"],
     "license": "MIT",
     "require": {
         "php": ">=8.2",
-        "jeroenmoonen/mailer-php": "^0.1",
+        "pufferpost/sdk": "^0.1",
         "symfony/mailer": "^6.4 || ^7.0 || ^8.0"
     },
     "require-dev": {
@@ -14,12 +14,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Mailer\\Symfony\\": "src/"
+            "PufferPost\\Symfony\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Mailer\\Symfony\\Tests\\": "tests/"
+            "PufferPost\\Symfony\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",

@@ -6,16 +6,16 @@ Because **Laravel 9+ runs on Symfony Mailer**, the same transport serves Laravel
 ## Install
 
 ```bash
-composer require jeroenmoonen/mailer-symfony
+composer require pufferpost/symfony-mailer
 ```
 
 ## Configure
 
 ```dotenv
 # .env
-MAILER_DSN=ourmailer+api://key_live_…@default
+MAILER_DSN=pufferpost+api://key_live_…@default
 # optional: point at another region/host
-# MAILER_DSN=ourmailer+api://key_live_…@default?base_url=https://api.mailer.eu
+# MAILER_DSN=pufferpost+api://key_live_…@default?base_url=https://api.mailer.eu
 ```
 
 Register the factory (Symfony autowires it as a `TransportFactoryInterface`); then plain
@@ -42,4 +42,4 @@ $mailer->send($email);            // → POST /v1/messages
 ```
 
 A plain `Email` without a template header is rejected — the current API is template-only.
-Batch sends and workflow triggers are SDK-only (see `jeroenmoonen/mailer-php`).
+Batch sends and workflow triggers are SDK-only (see `pufferpost/sdk`).

@@ -9,9 +9,9 @@ require dirname(__DIR__, 3).'/vendor/autoload.php';
 
 spl_autoload_register(static function (string $class): void {
     $prefixes = [
-        'Mailer\\Symfony\\Tests\\' => __DIR__,
-        'Mailer\\Symfony\\' => dirname(__DIR__).'/src',
-        'Mailer\\Sdk\\' => dirname(__DIR__, 2).'/php-sdk/src',
+        'PufferPost\\Symfony\\Tests\\' => __DIR__,
+        'PufferPost\\Symfony\\' => dirname(__DIR__).'/src',
+        'PufferPost\\Sdk\\' => dirname(__DIR__, 2).'/php-sdk/src',
     ];
 
     foreach ($prefixes as $prefix => $baseDir) {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Mailer\Symfony\Tests;
+namespace PufferPost\Symfony\Tests;
 
-use Mailer\Symfony\ApiTransport;
-use Mailer\Symfony\ApiTransportFactory;
-use Mailer\Symfony\MailerEmail;
+use PufferPost\Symfony\ApiTransport;
+use PufferPost\Symfony\ApiTransportFactory;
+use PufferPost\Symfony\MailerEmail;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -23,10 +23,10 @@ final class ApiTransportFactoryTest extends TestCase
 
     public function testCreatesATransportForTheSupportedScheme(): void
     {
-        $transport = $this->factory()->create(new Dsn('ourmailer+api', 'default', 'key_live_abc'));
+        $transport = $this->factory()->create(new Dsn('pufferpost+api', 'default', 'key_live_abc'));
 
         self::assertInstanceOf(ApiTransport::class, $transport);
-        self::assertSame('ourmailer+api://default', (string) $transport);
+        self::assertSame('pufferpost+api://default', (string) $transport);
     }
 
     public function testHonoursTheBaseUrlOption(): void
@@ -37,7 +37,7 @@ final class ApiTransportFactoryTest extends TestCase
 
             return new MockResponse((string) json_encode(['id' => 'm', 'status' => 'accepted']), ['http_code' => 202]);
         });
-        $transport = $this->factory($http)->create(new Dsn('ourmailer+api', 'default', 'key', options: ['base_url' => 'https://eu.api.test']));
+        $transport = $this->factory($http)->create(new Dsn('pufferpost+api', 'default', 'key', options: ['base_url' => 'https://eu.api.test']));
 
         $transport->send((new MailerEmail())->from('a@acme.com')->to('b@acme.com')->subject('Hi')->text('Hi!')->template('welcome'));
 
@@ -53,6 +53,6 @@ final class ApiTransportFactoryTest extends TestCase
     public function testRejectsADsnWithoutAnApiKey(): void
     {
         $this->expectException(IncompleteDsnException::class);
-        $this->factory()->create(new Dsn('ourmailer+api', 'default'));
+        $this->factory()->create(new Dsn('pufferpost+api', 'default'));
     }
 }

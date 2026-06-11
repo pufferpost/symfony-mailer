@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Mailer\Symfony;
+namespace PufferPost\Symfony;
 
-use Mailer\Sdk\Client;
+use PufferPost\Sdk\Client;
 use Symfony\Component\Mailer\Exception\UnsupportedSchemeException;
 use Symfony\Component\Mailer\Transport\AbstractTransportFactory;
 use Symfony\Component\Mailer\Transport\Dsn;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
 /**
- * Builds {@see ApiTransport} from a Mailer DSN (ADR-0037): `ourmailer+api://API_KEY@default`,
+ * Builds {@see ApiTransport} from a Mailer DSN (ADR-0037): `pufferpost+api://API_KEY@default`,
  * optionally `?base_url=https://api.eu…`. Registering this factory lets Symfony — and Laravel,
  * via the same Symfony Mailer — route `$mailer->send($email)` through the API.
  */
@@ -20,7 +20,7 @@ final class ApiTransportFactory extends AbstractTransportFactory
     public function create(Dsn $dsn): TransportInterface
     {
         if (!\in_array($dsn->getScheme(), $this->getSupportedSchemes(), true)) {
-            throw new UnsupportedSchemeException($dsn, 'ourmailer', $this->getSupportedSchemes());
+            throw new UnsupportedSchemeException($dsn, 'pufferpost', $this->getSupportedSchemes());
         }
 
         $baseUrl = $dsn->getOption('base_url');
@@ -38,6 +38,6 @@ final class ApiTransportFactory extends AbstractTransportFactory
      */
     protected function getSupportedSchemes(): array
     {
-        return ['ourmailer', 'ourmailer+api'];
+        return ['pufferpost', 'pufferpost+api'];
     }
 }

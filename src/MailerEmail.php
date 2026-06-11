@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mailer\Symfony;
+namespace PufferPost\Symfony;
 
 use Symfony\Component\Mime\Email;
 

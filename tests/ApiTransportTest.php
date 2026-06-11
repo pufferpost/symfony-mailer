@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Mailer\Symfony\Tests;
+namespace PufferPost\Symfony\Tests;
 
-use Mailer\Sdk\Client;
-use Mailer\Symfony\ApiTransport;
-use Mailer\Symfony\MailerEmail;
+use PufferPost\Sdk\Client;
+use PufferPost\Symfony\ApiTransport;
+use PufferPost\Symfony\MailerEmail;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;

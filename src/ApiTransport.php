@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Mailer\Symfony;
+namespace PufferPost\Symfony;
 
-use Mailer\Sdk\Client;
-use Mailer\Sdk\Email as ApiEmail;
+use PufferPost\Sdk\Client;
+use PufferPost\Sdk\Email as ApiEmail;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\SentMessage;
@@ -69,7 +69,7 @@ final class ApiTransport extends AbstractTransport
 
     public function __toString(): string
     {
-        return 'ourmailer+api://default';
+        return 'pufferpost+api://default';
     }
 
     private function header(Email $email, string $name): ?string

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PufferPost\Symfony\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PufferPost\Sdk\Client;
 use PufferPost\Symfony\ApiTransport;
 use PufferPost\Symfony\MailerEmail;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\Mailer\Exception\TransportException;

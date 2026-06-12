@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PufferPost\Symfony;
 
+use Psr\Log\LoggerInterface;
 use PufferPost\Sdk\Client;
 use PufferPost\Sdk\Email as ApiEmail;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;

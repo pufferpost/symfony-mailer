@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PufferPost\Symfony\Tests;
 
-use PufferPost\Symfony\MailerEmail;
 use PHPUnit\Framework\TestCase;
+use PufferPost\Symfony\MailerEmail;
 
 final class MailerEmailTest extends TestCase
 {

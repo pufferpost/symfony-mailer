@@ -71,6 +71,25 @@ final class ApiTransportTest extends TestCase
         self::assertCount(2, $this->requests);
     }
 
+    public function testSendsByTemplateId(): void
+    {
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->subject('Welcome')
+            ->text('Welcome!')
+            ->templateId('tpl_abc123')
+            ->templateData(['name' => 'Jane']);
+
+        $this->transport()->send($email);
+
+        self::assertCount(1, $this->requests);
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('tpl_abc123', $body['templateId']);
+        self::assertArrayNotHasKey('template', $body);
+    }
+
     public function testRejectsAnEmailWithoutATemplate(): void
     {
         $email = (new Email())

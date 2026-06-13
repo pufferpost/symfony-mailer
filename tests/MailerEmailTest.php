@@ -31,4 +31,11 @@ final class MailerEmailTest extends TestCase
         self::assertCount(1, iterator_to_array($email->getHeaders()->all(MailerEmail::HEADER_TEMPLATE)));
         self::assertSame('second', $email->getHeaders()->getHeaderBody(MailerEmail::HEADER_TEMPLATE));
     }
+
+    public function testSetsTheTemplateIdHeader(): void
+    {
+        $email = (new MailerEmail())->templateId('tpl_abc123');
+
+        self::assertSame('tpl_abc123', $email->getHeaders()->getHeaderBody(MailerEmail::HEADER_TEMPLATE_ID));
+    }
 }

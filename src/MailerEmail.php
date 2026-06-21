@@ -13,19 +13,13 @@ use Symfony\Component\Mime\Email;
  */
 final class MailerEmail extends Email
 {
-    public const HEADER_TEMPLATE = 'X-Mailer-Template';
     public const HEADER_TEMPLATE_ID = 'X-Mailer-Template-Id';
     public const HEADER_DATA = 'X-Mailer-Data';
     public const HEADER_METADATA = 'X-Mailer-Metadata';
     public const HEADER_IDEMPOTENCY_KEY = 'X-Mailer-Idempotency-Key';
 
-    public function template(string $template): static
-    {
-        return $this->setHeader(self::HEADER_TEMPLATE, $template);
-    }
-
     /**
-     * Reference a template by its stable `tpl_…` id (preferred over the slug).
+     * Reference a template by its stable `tpl_…` id (ADR-0053).
      */
     public function templateId(string $templateId): static
     {

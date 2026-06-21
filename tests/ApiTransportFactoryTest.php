@@ -39,7 +39,7 @@ final class ApiTransportFactoryTest extends TestCase
         });
         $transport = $this->factory($http)->create(new Dsn('pufferpost+api', 'default', 'key', options: ['base_url' => 'https://eu.api.test']));
 
-        $transport->send((new MailerEmail())->from('a@acme.com')->to('b@acme.com')->subject('Hi')->text('Hi!')->template('welcome'));
+        $transport->send((new MailerEmail())->from('a@acme.com')->to('b@acme.com')->subject('Hi')->text('Hi!')->templateId('tpl_welcome'));
 
         self::assertSame('https://eu.api.test/v1/messages', $captured['url']);
     }

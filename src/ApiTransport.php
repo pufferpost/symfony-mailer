@@ -17,8 +17,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * A thin Symfony Mailer transport (ADR-0037): it translates a Symfony {@see Email} into a
  * `POST /v1/messages` per recipient via the SDK {@see Client} — all logic stays server-side.
- * The template + data ride as `X-Mailer-*` headers (see {@see MailerEmail}); the API is
- * template-only, so an email without a template slug or template id is rejected.
+ * The template id + data ride as `X-Mailer-*` headers (see {@see MailerEmail}); the API is
+ * template-only, so an email without a template id is rejected (ADR-0053).
  *
  * Because Laravel 9+ runs on Symfony Mailer, this same transport serves Laravel too.
  */
@@ -37,10 +37,9 @@ final class ApiTransport extends AbstractTransport
         $email = MessageConverter::toEmail($message->getOriginalMessage());
         $envelope = $message->getEnvelope();
 
-        $template = $this->header($email, MailerEmail::HEADER_TEMPLATE);
         $templateId = $this->header($email, MailerEmail::HEADER_TEMPLATE_ID);
-        if (null === $template && null === $templateId) {
-            throw new TransportException('The mailer API requires a template; set it via MailerEmail::template() or MailerEmail::templateId().');
+        if (null === $templateId) {
+            throw new TransportException('The mailer API requires a template; set it via MailerEmail::templateId().');
         }
 
         $data = $this->jsonHeader($email, MailerEmail::HEADER_DATA);
@@ -49,7 +48,7 @@ final class ApiTransport extends AbstractTransport
         $from = $envelope->getSender()->getAddress();
 
         foreach ($envelope->getRecipients() as $recipient) {
-            $this->client->send(new ApiEmail($from, $recipient->getAddress(), $template, $data, $metadata, $templateId), $idempotencyKey);
+            $this->client->send(new ApiEmail($from, $recipient->getAddress(), $templateId, $data, $metadata), $idempotencyKey);
         }
     }
 

@@ -34,7 +34,7 @@ $email = (new MailerEmail())
     ->to('jane@example.com')
     ->subject('Welcome')          // shown in clients; the template owns the rendered body
     ->text('Welcome!')            // Symfony requires a body part
-    ->template('welcome')
+    ->templateId('tpl_…')
     ->templateData(['name' => 'Jane'])
     ->idempotencyKey('order-1234');
 

@@ -14,7 +14,6 @@ use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\MessageConverter;
-use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -129,10 +128,8 @@ final class ApiTransport extends AbstractTransport
     private function attachments(Email $email): array
     {
         $attachments = [];
+        // Email::getAttachments() returns DataPart instances.
         foreach ($email->getAttachments() as $part) {
-            if (!$part instanceof DataPart) {
-                continue;
-            }
             $attachments[] = Attachment::fromContents(
                 $part->getFilename() ?? 'attachment',
                 $part->getMediaType().'/'.$part->getMediaSubtype(),

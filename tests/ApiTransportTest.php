@@ -147,6 +147,26 @@ final class ApiTransportTest extends TestCase
         self::assertSame([['filename' => 'note.txt', 'contentType' => 'text/plain', 'content' => base64_encode('file-bytes')]], $body['attachments']);
     }
 
+    public function testFansOutOverEnvelopeRecipientsWhenThereIsNoToHeader(): void
+    {
+        // A Bcc-only email has no To header; the envelope still carries the recipient, so the
+        // transport sends to it (with cc/bcc cleared, since it is already the primary).
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->bcc('hidden@acme.com')
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome');
+
+        $this->transport()->send($email);
+
+        self::assertCount(1, $this->requests);
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('hidden@acme.com', $body['to']);
+        self::assertArrayNotHasKey('bcc', $body);
+    }
+
     public function testRejectsAnInlineEmailThatHasNoSubject(): void
     {
         // Inline sends need a subject (the API requires subject + html together); without a

@@ -25,9 +25,9 @@ $email = (new Email())
 $mailer->send($email);
 ```
 
-If there is no HTML part, the text body is used as the body. An email with a body but **no subject**
-and **no template** is rejected with a `TransportException` (the API needs a subject for an inline
-send).
+HTML and text bodies are sent as the alternative pair; either one on its own is a valid send. An
+email with a body but **no subject** and **no template** is rejected with a `TransportException`
+(the API needs a subject for an inline send).
 
 ## Templated send
 

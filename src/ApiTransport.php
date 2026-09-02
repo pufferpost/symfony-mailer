@@ -52,9 +52,10 @@ final class ApiTransport extends AbstractTransport
 
         $templateId = $this->header($email, MailerEmail::HEADER_TEMPLATE_ID);
         $subject = $email->getSubject();
-        $html = $this->htmlBody($email);
+        $html = $this->body($email->getHtmlBody());
+        $text = $this->body($email->getTextBody());
 
-        if (null === $templateId && (null === $subject || null === $html)) {
+        if (null === $templateId && (null === $subject || (null === $html && null === $text))) {
             throw new TransportException('Provide a template via MailerEmail::templateId(), or a subject with an HTML or text body for an inline send.');
         }
 
@@ -70,9 +71,10 @@ final class ApiTransport extends AbstractTransport
         $replyTo = $this->firstAddress($email->getReplyTo());
         $attachments = $this->attachments($email);
 
-        // A template drives the content server-side; only an inline send carries subject/html.
+        // A template drives the content server-side; only an inline send carries subject/body.
         $inlineSubject = null === $templateId ? $subject : null;
         $inlineHtml = null === $templateId ? $html : null;
+        $inlineText = null === $templateId ? $text : null;
 
         $recipients = $email->getTo();
         $cc = $this->addresses($email->getCc());
@@ -100,6 +102,7 @@ final class ApiTransport extends AbstractTransport
                 timezone: $timezone,
                 subject: $inlineSubject,
                 html: $inlineHtml,
+                text: $inlineText,
                 bcc: $bcc,
                 attachments: $attachments,
                 // The API fingerprints the recipient, so one key cannot cover a fan-out; derive a
@@ -109,18 +112,11 @@ final class ApiTransport extends AbstractTransport
     }
 
     /**
-     * The HTML body, falling back to the plain-text body (the API's inline path is HTML-only).
+     * A body part as a string; Symfony also accepts a resource, which the API cannot carry.
      */
-    private function htmlBody(Email $email): ?string
+    private function body(mixed $body): ?string
     {
-        $html = $email->getHtmlBody();
-        if (\is_string($html)) {
-            return $html;
-        }
-
-        $text = $email->getTextBody();
-
-        return \is_string($text) ? $text : null;
+        return \is_string($body) ? $body : null;
     }
 
     /**

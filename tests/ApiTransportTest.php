@@ -223,7 +223,7 @@ final class ApiTransportTest extends TestCase
         self::assertArrayNotHasKey('templateId', $body);
     }
 
-    public function testFallsBackToTheTextBodyAsHtmlWhenNoHtmlPartIsSet(): void
+    public function testSendsATextOnlyEmailAsAPlainTextBody(): void
     {
         $email = (new Email())
             ->from('no-reply@acme.com')
@@ -235,7 +235,25 @@ final class ApiTransportTest extends TestCase
 
         $body = json_decode((string) $this->requests[0]['options']['body'], true);
         self::assertIsArray($body);
-        self::assertSame('Plain hello', $body['html']);
+        self::assertSame('Plain hello', $body['text']);
+        self::assertArrayNotHasKey('html', $body);
+    }
+
+    public function testSendsBothBodiesAsTheAlternativePair(): void
+    {
+        $email = (new Email())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->subject('Welcome')
+            ->text('Plain hello')
+            ->html('<p>Hi</p>');
+
+        $this->transport()->send($email);
+
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('<p>Hi</p>', $body['html']);
+        self::assertSame('Plain hello', $body['text']);
     }
 
     public function testMapsCcBccReplyToAndAttachments(): void

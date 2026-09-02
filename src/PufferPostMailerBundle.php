@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 /**
- * Registers the {@see ApiTransportFactory} as a Mailer transport factory (ADR-0037), so a consuming
+ * Registers the {@see ApiTransportFactory} as a Mailer transport factory, so a consuming
  * Symfony app only has to enable the bundle and point `MAILER_DSN` at `pufferpost+api://KEY@default`.
  * The factory inherits the abstract `mailer.transport_factory` service (event dispatcher, HTTP client,
  * logger), so Laravel — which runs on Symfony Mailer — is served by the same wiring.

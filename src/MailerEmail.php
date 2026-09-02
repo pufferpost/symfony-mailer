@@ -8,7 +8,7 @@ use Symfony\Component\Mime\Email;
 
 /**
  * A Symfony {@see Email} that carries the API-specific metadata as allow-listed `X-Mailer-*`
- * headers (ADR-0037), so users never hand-write headers and plain `$mailer->send($email)` keeps
+ * headers, so users never hand-write headers and plain `$mailer->send($email)` keeps
  * working. The transport reads these to build the API request.
  */
 final class MailerEmail extends Email
@@ -22,7 +22,7 @@ final class MailerEmail extends Email
     public const HEADER_TIMEZONE = 'X-Mailer-Timezone';
 
     /**
-     * Reference a template by its stable `tpl_…` id (ADR-0053).
+     * Reference a template by its stable `tpl_…` id.
      */
     public function templateId(string $templateId): static
     {

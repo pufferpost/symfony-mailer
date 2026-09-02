@@ -21,7 +21,7 @@ public function boot(): void
     Mail::extend('pufferpost', function (array $config) {
         return (new ApiTransportFactory())->create(
             new Dsn('pufferpost+api', 'default', $config['key'], options: [
-                'base_url' => $config['base_url'] ?? 'https://api.mailer.eu',
+                'base_url' => $config['base_url'] ?? 'https://api.pufferpost.com',
             ]),
         );
     });
@@ -36,7 +36,7 @@ public function boot(): void
     'pufferpost' => [
         'transport' => 'pufferpost',
         'key'       => env('PUFFERPOST_KEY'),
-        'base_url'  => env('PUFFERPOST_BASE_URL', 'https://api.mailer.eu'),
+        'base_url'  => env('PUFFERPOST_BASE_URL', 'https://api.pufferpost.com'),
     ],
 ],
 ```

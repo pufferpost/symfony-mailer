@@ -1,6 +1,6 @@
 # PufferPost Symfony Mailer
 
-A Symfony **bundle** + Mailer **transport** for the PufferPost transactional email API (ADR-0037).
+A Symfony **bundle** + Mailer **transport** for the PufferPost transactional email API.
 MIT-licensed. Point `MAILER_DSN` at the API and existing `$mailer->send($email)` calls flow through
 it — no code changes for ordinary mail.
 

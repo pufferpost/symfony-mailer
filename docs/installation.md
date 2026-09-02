@@ -35,10 +35,10 @@ MAILER_DSN=pufferpost+api://key_live_…@default
 ### Point at your region/host
 
 ```dotenv
-MAILER_DSN=pufferpost+api://key_live_…@default?base_url=https://api.mailer.eu
+MAILER_DSN=pufferpost+api://key_live_…@default?base_url=https://api.pufferpost.com
 ```
 
-`base_url` defaults to `https://api.mailer.eu` when omitted.
+`base_url` defaults to `https://api.pufferpost.com` when omitted.
 
 ## Verify
 

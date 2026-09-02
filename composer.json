@@ -1,6 +1,6 @@
 {
     "name": "pufferpost/symfony-mailer",
-    "description": "Symfony Mailer transport for the EU-first transactional email API (ADR-0037).",
+    "description": "Symfony Mailer transport for the transactional email API.",
     "type": "library",
     "keywords": ["email", "transactional", "symfony", "mailer", "transport"],
     "license": "MIT",

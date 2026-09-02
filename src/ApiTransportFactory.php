@@ -11,8 +11,8 @@ use Symfony\Component\Mailer\Transport\Dsn;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
 /**
- * Builds {@see ApiTransport} from a Mailer DSN (ADR-0037): `pufferpost+api://API_KEY@default`,
- * optionally `?base_url=https://api.eu…`. Registering this factory lets Symfony — and Laravel,
+ * Builds {@see ApiTransport} from a Mailer DSN: `pufferpost+api://API_KEY@default`,
+ * optionally `?base_url=https://api.example…`. Registering this factory lets Symfony — and Laravel,
  * via the same Symfony Mailer — route `$mailer->send($email)` through the API.
  */
 final class ApiTransportFactory extends AbstractTransportFactory

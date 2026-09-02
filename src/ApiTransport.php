@@ -17,7 +17,7 @@ use Symfony\Component\Mime\MessageConverter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
- * A thin Symfony Mailer transport (ADR-0037): it translates a Symfony {@see Email} into one
+ * A thin Symfony Mailer transport: it translates a Symfony {@see Email} into one
  * `POST /v1/messages` per primary recipient via the SDK {@see Client} — all logic stays server-side.
  *
  * Two send shapes, mirroring the API:

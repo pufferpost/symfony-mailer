@@ -1,6 +1,6 @@
 # mailer-symfony
 
-A Symfony bundle + Mailer transport for the EU-first transactional email API (ADR-0037). MIT-licensed.
+A Symfony bundle + Mailer transport for the transactional email API. MIT-licensed.
 Because **Laravel 9+ runs on Symfony Mailer**, the same transport serves Laravel too.
 
 **Full documentation:** [`docs/`](docs/index.md) — installation, sending, Laravel, testing.
@@ -27,7 +27,7 @@ return [
 # .env
 MAILER_DSN=pufferpost+api://key_live_…@default
 # optional: point at another region/host
-# MAILER_DSN=pufferpost+api://key_live_…@default?base_url=https://api.pufferpost.eu
+# MAILER_DSN=pufferpost+api://key_live_…@default?base_url=https://api.pufferpost.com
 ```
 
 The bundle registers the transport factory, so `$mailer->send($email)` flows through the API with no

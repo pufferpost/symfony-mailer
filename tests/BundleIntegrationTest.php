@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Kernel;
 
 /**
- * Proves the bundle makes the transport turnkey (ADR-0037): dropping
+ * Proves the bundle makes the transport turnkey: dropping
  * {@see PufferPostMailerBundle} into an app and pointing MAILER_DSN at
  * `pufferpost+api://…` is all it takes — Symfony resolves the scheme through
  * our factory with no hand-registered services.

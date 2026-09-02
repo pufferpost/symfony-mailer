@@ -3,6 +3,8 @@
 A Symfony bundle + Mailer transport for the EU-first transactional email API (ADR-0037). MIT-licensed.
 Because **Laravel 9+ runs on Symfony Mailer**, the same transport serves Laravel too.
 
+**Full documentation:** [`docs/`](docs/index.md) — installation, sending, Laravel, testing.
+
 ## Install
 
 ```bash

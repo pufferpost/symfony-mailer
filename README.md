@@ -27,7 +27,7 @@ return [
 # .env
 MAILER_DSN=pufferpost+api://key_live_…@default
 # optional: point at another region/host
-# MAILER_DSN=pufferpost+api://key_live_…@default?base_url=https://api.pufferpost.com
+# MAILER_DSN=pufferpost+api://key_live_…@default?base_url=https://pufferpost.com
 ```
 
 The bundle registers the transport factory, so `$mailer->send($email)` flows through the API with no

@@ -17,6 +17,9 @@ final class MailerEmail extends Email
     public const HEADER_DATA = 'X-Mailer-Data';
     public const HEADER_METADATA = 'X-Mailer-Metadata';
     public const HEADER_IDEMPOTENCY_KEY = 'X-Mailer-Idempotency-Key';
+    public const HEADER_UNSUBSCRIBE_GROUP = 'X-Mailer-Unsubscribe-Group';
+    public const HEADER_LOCALE = 'X-Mailer-Locale';
+    public const HEADER_TIMEZONE = 'X-Mailer-Timezone';
 
     /**
      * Reference a template by its stable `tpl_…` id (ADR-0053).
@@ -45,6 +48,30 @@ final class MailerEmail extends Email
     public function idempotencyKey(string $key): static
     {
         return $this->setHeader(self::HEADER_IDEMPOTENCY_KEY, $key);
+    }
+
+    /**
+     * The subscription topic this message belongs to, for per-group one-click unsubscribe.
+     */
+    public function unsubscribeGroup(string $group): static
+    {
+        return $this->setHeader(self::HEADER_UNSUBSCRIBE_GROUP, $group);
+    }
+
+    /**
+     * The recipient's locale, selecting a per-locale template variant.
+     */
+    public function locale(string $locale): static
+    {
+        return $this->setHeader(self::HEADER_LOCALE, $locale);
+    }
+
+    /**
+     * The recipient's timezone, used to render dates in their local time.
+     */
+    public function timezone(string $timezone): static
+    {
+        return $this->setHeader(self::HEADER_TIMEZONE, $timezone);
     }
 
     private function setHeader(string $name, string $value): static

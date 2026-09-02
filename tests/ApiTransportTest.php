@@ -29,6 +29,121 @@ final class ApiTransportTest extends TestCase
         return new ApiTransport(new Client('key_test', 'https://api.test', $http));
     }
 
+    private function headerValue(int $index, string $name): ?string
+    {
+        $headers = $this->requests[$index]['options']['headers'] ?? [];
+        foreach (array_map(strval(...), \is_array($headers) ? $headers : []) as $header) {
+            if (str_starts_with($header, $name.': ')) {
+                return substr($header, \strlen($name) + 2);
+            }
+        }
+
+        return null;
+    }
+
+    public function testUsesTheFromHeaderRatherThanTheEnvelopeSender(): void
+    {
+        // Symfony resolves the envelope sender as Sender ?? Return-Path ?? From, but the API's
+        // `from` is the visible sender identity that must match a verified sender.
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->returnPath('bounces@acme.com')
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome');
+
+        $this->transport()->send($email);
+
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('no-reply@acme.com', $body['from']);
+    }
+
+    public function testFallsBackToTheEnvelopeSenderWhenThereIsNoFromHeader(): void
+    {
+        $email = (new MailerEmail())
+            ->sender('agent@acme.com')
+            ->to('jane@example.com')
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome');
+
+        $this->transport()->send($email);
+
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('agent@acme.com', $body['from']);
+    }
+
+    public function testGivesEachRecipientItsOwnIdempotencyKey(): void
+    {
+        // The API fingerprints the recipient, so reusing one key across recipients would be
+        // rejected as a reused key. Derive a stable per-recipient key instead.
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com', 'bob@example.com')
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome')
+            ->idempotencyKey('order-1');
+
+        $this->transport()->send($email);
+
+        self::assertSame('order-1:jane@example.com', $this->headerValue(0, 'Idempotency-Key'));
+        self::assertSame('order-1:bob@example.com', $this->headerValue(1, 'Idempotency-Key'));
+    }
+
+    public function testKeepsASingleRecipientsIdempotencyKeyVerbatim(): void
+    {
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome')
+            ->idempotencyKey('order-1');
+
+        $this->transport()->send($email);
+
+        self::assertSame('order-1', $this->headerValue(0, 'Idempotency-Key'));
+    }
+
+    public function testRejectsAMalformedTemplateDataHeader(): void
+    {
+        $email = (new Email())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->subject('Welcome')
+            ->text('Body');
+        $email->getHeaders()->addTextHeader(MailerEmail::HEADER_TEMPLATE_ID, 'tpl_welcome');
+        $email->getHeaders()->addTextHeader(MailerEmail::HEADER_DATA, '{not json');
+
+        $this->expectException(TransportException::class);
+        $this->transport()->send($email);
+    }
+
+    public function testCarriesTheUnsubscribeGroupLocaleAndTimezone(): void
+    {
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome')
+            ->unsubscribeGroup('receipts')
+            ->locale('nl')
+            ->timezone('Europe/Amsterdam');
+
+        $this->transport()->send($email);
+
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('receipts', $body['unsubscribeGroup']);
+        self::assertSame('nl', $body['locale']);
+        self::assertSame('Europe/Amsterdam', $body['timezone']);
+    }
+
     public function testTranslatesAMailerEmailIntoAnApiSend(): void
     {
         $email = (new MailerEmail())

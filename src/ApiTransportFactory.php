@@ -26,7 +26,7 @@ final class ApiTransportFactory extends AbstractTransportFactory
         $baseUrl = $dsn->getOption('base_url');
         $client = new Client(
             $this->getUser($dsn),
-            \is_string($baseUrl) ? $baseUrl : 'https://api.mailer.eu',
+            \is_string($baseUrl) ? $baseUrl : Client::DEFAULT_BASE_URL,
             $this->client,
             integration: 'pufferpost-symfony/'.ApiTransport::VERSION,
         );

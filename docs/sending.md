@@ -52,14 +52,28 @@ $mailer->send($email);
 
 `MailerEmail` methods:
 
-| Method               | Sets                                                        |
-| -------------------- | ---------------------------------------------------------- |
-| `templateId(string)` | The `tpl_…` template to render                             |
-| `templateData(array)`| Render variables (JSON)                                    |
-| `metadata(array)`    | Opaque key/values echoed back on the message + webhooks    |
-| `idempotencyKey(string)` | Dedupe key so a retry is not delivered twice           |
+| Method                     | Sets                                                     |
+| -------------------------- | -------------------------------------------------------- |
+| `templateId(string)`       | The `tpl_…` template to render                           |
+| `templateData(array)`      | Render variables (JSON)                                  |
+| `metadata(array)`          | Opaque key/values echoed back on the message + webhooks  |
+| `idempotencyKey(string)`   | Dedupe key so a retry is not delivered twice             |
+| `unsubscribeGroup(string)` | Subscription topic for per-group one-click unsubscribe   |
+| `locale(string)`           | Recipient locale, selecting a per-locale template variant|
+| `timezone(string)`         | Recipient timezone, for rendering dates in local time    |
 
 `cc`, `bcc`, `reply-to`, and attachments work on a `MailerEmail` too (inherited from `Email`).
+
+### Sender identity
+
+The API's `from` is taken from the email's **From** header — the visible sender, which must match a
+verified sender. Setting a `Return-Path` or `Sender` header for bounce handling does not change it.
+
+### Idempotency across recipients
+
+The API dedupes on the recipient as well as the payload, so a single key cannot cover a fan-out.
+With more than one `To`, the transport derives a stable per-recipient key (`<your-key>:<address>`);
+a single recipient keeps your key verbatim. Retrying the same email replays correctly either way.
 
 Provide a template **or** an inline subject + body, never both.
 

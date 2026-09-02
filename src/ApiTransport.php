@@ -61,7 +61,12 @@ final class ApiTransport extends AbstractTransport
         $data = $this->jsonHeader($email, MailerEmail::HEADER_DATA);
         $metadata = $this->jsonHeader($email, MailerEmail::HEADER_METADATA);
         $idempotencyKey = $this->header($email, MailerEmail::HEADER_IDEMPOTENCY_KEY);
-        $from = $envelope->getSender()->getAddress();
+        $unsubscribeGroup = $this->header($email, MailerEmail::HEADER_UNSUBSCRIBE_GROUP);
+        $locale = $this->header($email, MailerEmail::HEADER_LOCALE);
+        $timezone = $this->header($email, MailerEmail::HEADER_TIMEZONE);
+        // The API's `from` is the visible sender identity, which must match a verified sender —
+        // not the envelope sender (Symfony resolves that as Sender ?? Return-Path ?? From).
+        $from = $this->firstAddress($email->getFrom()) ?? $envelope->getSender()->getAddress();
         $replyTo = $this->firstAddress($email->getReplyTo());
         $attachments = $this->attachments($email);
 
@@ -78,20 +83,28 @@ final class ApiTransport extends AbstractTransport
             $cc = $bcc = [];
         }
 
+        $perRecipientKey = null !== $idempotencyKey && \count($recipients) > 1;
+
         foreach ($recipients as $recipient) {
+            $address = $recipient->getAddress();
             $this->client->send(new ApiEmail(
                 from: $from,
-                to: $recipient->getAddress(),
+                to: $address,
                 templateId: $templateId,
                 data: $data,
                 metadata: $metadata,
                 replyTo: $replyTo,
                 cc: $cc,
+                unsubscribeGroup: $unsubscribeGroup,
+                locale: $locale,
+                timezone: $timezone,
                 subject: $inlineSubject,
                 html: $inlineHtml,
                 bcc: $bcc,
                 attachments: $attachments,
-            ), $idempotencyKey);
+                // The API fingerprints the recipient, so one key cannot cover a fan-out; derive a
+                // stable per-recipient key so retrying the same email still replays correctly.
+            ), $perRecipientKey ? $idempotencyKey.':'.$address : $idempotencyKey);
         }
     }
 
@@ -147,6 +160,9 @@ final class ApiTransport extends AbstractTransport
     }
 
     /**
+     * Decode a JSON `X-Mailer-*` header. A malformed value is an error rather than an empty array:
+     * silently dropping it would send the message with its template variables missing.
+     *
      * @return array<array-key, mixed>
      */
     private function jsonHeader(Email $email, string $name): array
@@ -157,8 +173,11 @@ final class ApiTransport extends AbstractTransport
         }
 
         $decoded = json_decode($raw, true);
+        if (!\is_array($decoded)) {
+            throw new TransportException(\sprintf('The "%s" header must contain a JSON object; set it via MailerEmail.', $name));
+        }
 
-        return \is_array($decoded) ? $decoded : [];
+        return $decoded;
     }
 
     public function __toString(): string

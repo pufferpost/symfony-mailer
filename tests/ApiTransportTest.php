@@ -90,13 +90,71 @@ final class ApiTransportTest extends TestCase
         self::assertArrayNotHasKey('template', $body);
     }
 
-    public function testRejectsAnEmailWithoutATemplate(): void
+    public function testSendsAPlainInlineEmailWithoutATemplate(): void
     {
         $email = (new Email())
             ->from('no-reply@acme.com')
             ->to('jane@example.com')
             ->subject('Welcome')
-            ->text('plain body');
+            ->html('<p>Hi Jane</p>');
+
+        $this->transport()->send($email);
+
+        self::assertCount(1, $this->requests);
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('Welcome', $body['subject']);
+        self::assertSame('<p>Hi Jane</p>', $body['html']);
+        self::assertArrayNotHasKey('templateId', $body);
+    }
+
+    public function testFallsBackToTheTextBodyAsHtmlWhenNoHtmlPartIsSet(): void
+    {
+        $email = (new Email())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->subject('Welcome')
+            ->text('Plain hello');
+
+        $this->transport()->send($email);
+
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('Plain hello', $body['html']);
+    }
+
+    public function testMapsCcBccReplyToAndAttachments(): void
+    {
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->cc('ops@acme.com')
+            ->bcc('audit@acme.com')
+            ->replyTo('support@acme.com')
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome')
+            ->attach('file-bytes', 'note.txt', 'text/plain');
+
+        $this->transport()->send($email);
+
+        self::assertCount(1, $this->requests);
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame(['ops@acme.com'], $body['cc']);
+        self::assertSame(['audit@acme.com'], $body['bcc']);
+        self::assertSame('support@acme.com', $body['replyTo']);
+        self::assertSame([['filename' => 'note.txt', 'contentType' => 'text/plain', 'content' => base64_encode('file-bytes')]], $body['attachments']);
+    }
+
+    public function testRejectsAnInlineEmailThatHasNoSubject(): void
+    {
+        // Inline sends need a subject (the API requires subject + html together); without a
+        // template and without a subject there is no valid request to build.
+        $email = (new Email())
+            ->from('no-reply@acme.com')
+            ->to('jane@example.com')
+            ->html('<p>orphan body</p>');
 
         $this->expectException(TransportException::class);
         $this->transport()->send($email);

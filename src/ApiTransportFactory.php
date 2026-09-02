@@ -28,6 +28,7 @@ final class ApiTransportFactory extends AbstractTransportFactory
             $this->getUser($dsn),
             \is_string($baseUrl) ? $baseUrl : 'https://api.mailer.eu',
             $this->client,
+            integration: 'pufferpost-symfony/'.ApiTransport::VERSION,
         );
 
         return new ApiTransport($client, $this->dispatcher, $this->logger);

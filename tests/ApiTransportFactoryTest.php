@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PufferPost\Symfony\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PufferPost\Sdk\Client;
 use PufferPost\Symfony\ApiTransport;
 use PufferPost\Symfony\ApiTransportFactory;
 use PufferPost\Symfony\MailerEmail;
@@ -42,6 +43,23 @@ final class ApiTransportFactoryTest extends TestCase
         $transport->send((new MailerEmail())->from('a@acme.com')->to('b@acme.com')->subject('Hi')->text('Hi!')->templateId('tpl_welcome'));
 
         self::assertSame('https://eu.api.test/v1/messages', $captured['url']);
+    }
+
+    public function testIdentifiesTheSymfonyTransportInTheUserAgent(): void
+    {
+        $captured = [];
+        $http = new MockHttpClient(static function (string $method, string $url, array $options) use (&$captured): MockResponse {
+            $captured['headers'] = $options['headers'] ?? [];
+
+            return new MockResponse((string) json_encode(['id' => 'm', 'status' => 'accepted']), ['http_code' => 202]);
+        });
+        $transport = $this->factory($http)->create(new Dsn('pufferpost+api', 'default', 'key'));
+
+        $transport->send((new MailerEmail())->from('a@acme.com')->to('b@acme.com')->subject('Hi')->text('Hi!')->templateId('tpl_welcome'));
+
+        self::assertIsArray($captured['headers']);
+        $headers = array_map(strval(...), $captured['headers']);
+        self::assertContains('User-Agent: pufferpost-symfony/'.ApiTransport::VERSION.' pufferpost-php/'.Client::VERSION, $headers);
     }
 
     public function testRejectsAnUnsupportedScheme(): void

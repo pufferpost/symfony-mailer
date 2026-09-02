@@ -31,6 +31,12 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 final class ApiTransport extends AbstractTransport
 {
+    /**
+     * This transport's version, reported to the API as the integration marker in the User-Agent
+     * (`pufferpost-symfony/<version> pufferpost-php/<sdk>`). Keep in step with the package tag.
+     */
+    public const VERSION = '0.1.0';
+
     public function __construct(
         private readonly Client $client,
         ?EventDispatcherInterface $dispatcher = null,

@@ -16,7 +16,9 @@ API:
 - **Inline (drop-in)** — a plain `Email` with a subject and an HTML/text body is delivered as-is.
 - **Templated** — a `MailerEmail` referencing a `tpl_…` id renders server-side.
 
-All logic stays server-side; the transport is thin.
+All logic stays server-side; the transport is thin. It identifies itself to the API in the
+User-Agent — `pufferpost-symfony/<version> pufferpost-php/<version>` — so requests sent through the
+transport are distinguishable from raw SDK calls.
 
 ## Guides
 

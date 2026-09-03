@@ -18,7 +18,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * A thin Symfony Mailer transport: it translates a Symfony {@see Email} into one
- * `POST /v1/messages` per primary recipient via the SDK {@see Client} — all logic stays server-side.
+ * `POST /api/v1/messages` per primary recipient via the SDK {@see Client} — all logic stays server-side.
  *
  * Two send shapes, mirroring the API:
  *   - **Templated** — set a template id (and optional data/metadata) via {@see MailerEmail}; the

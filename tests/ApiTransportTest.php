@@ -160,7 +160,7 @@ final class ApiTransportTest extends TestCase
 
         self::assertCount(1, $this->requests);
         self::assertSame('POST', $this->requests[0]['method']);
-        self::assertSame('https://api.test/v1/messages', $this->requests[0]['url']);
+        self::assertSame('https://api.test/api/v1/messages', $this->requests[0]['url']);
 
         $body = json_decode((string) $this->requests[0]['options']['body'], true);
         self::assertSame(

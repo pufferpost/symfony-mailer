@@ -49,7 +49,7 @@ $email = (new Email())
     ->html('<h1>Thanks!</h1>')
     ->attachFromPath('/tmp/receipt.pdf');
 
-$mailer->send($email);            // → POST /v1/messages (inline content)
+$mailer->send($email);            // → POST /api/v1/messages (inline content)
 ```
 
 `from` / `to` / `cc` / `bcc` / `reply-to` / `subject` / `html` / `text` / `attachments` map straight
@@ -73,7 +73,7 @@ $email = (new MailerEmail())
     ->metadata(['order_id' => 'o_9'])
     ->idempotencyKey('order-1234');
 
-$mailer->send($email);            // → POST /v1/messages (templated)
+$mailer->send($email);            // → POST /api/v1/messages (templated)
 ```
 
 Provide a template **or** inline subject + html, never both. Batch sends and workflow triggers are

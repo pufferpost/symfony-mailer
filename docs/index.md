@@ -9,7 +9,7 @@ Because **Laravel 9+ runs on Symfony Mailer**, the same transport serves Laravel
 
 ## How it works
 
-The transport translates a Symfony `Email` into `POST /v1/messages` (one request per `To`
+The transport translates a Symfony `Email` into `POST /api/v1/messages` (one request per `To`
 recipient) via the [`pufferpost/sdk`](../../php-sdk/docs/index.md) client. Two shapes, mirroring the
 API:
 

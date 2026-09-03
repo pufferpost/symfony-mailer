@@ -1,7 +1,7 @@
 # Sending email
 
 The transport maps a Symfony `Email` to the API. Native fields — `from`, `to`, `cc`, `bcc`,
-`reply-to`, `subject`, `html`, `text`, `attachments` — map straight through. One `POST /v1/messages`
+`reply-to`, `subject`, `html`, `text`, `attachments` — map straight through. One `POST /api/v1/messages`
 is sent per `To` recipient, each carrying the same cc/bcc.
 
 ## Drop-in: an ordinary email

@@ -42,7 +42,7 @@ final class ApiTransportFactoryTest extends TestCase
 
         $transport->send((new MailerEmail())->from('a@acme.com')->to('b@acme.com')->subject('Hi')->text('Hi!')->templateId('tpl_welcome'));
 
-        self::assertSame('https://eu.api.test/v1/messages', $captured['url']);
+        self::assertSame('https://eu.api.test/api/v1/messages', $captured['url']);
     }
 
     public function testIdentifiesTheSymfonyTransportInTheUserAgent(): void

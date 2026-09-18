@@ -1,8 +1,14 @@
 {
     "name": "pufferpost/symfony-mailer",
-    "description": "Symfony Mailer transport for the transactional email API.",
+    "description": "Deprecated: use the symfony/puffer-post-mailer bridge instead.",
     "type": "library",
-    "keywords": ["email", "transactional", "symfony", "mailer", "transport"],
+    "keywords": [
+        "email",
+        "transactional",
+        "symfony",
+        "mailer",
+        "transport"
+    ],
     "license": "MIT",
     "require": {
         "php": ">=8.2",
@@ -31,5 +37,6 @@
     "minimum-stability": "stable",
     "config": {
         "sort-packages": true
-    }
+    },
+    "abandoned": "symfony/puffer-post-mailer"
 }

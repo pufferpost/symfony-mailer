@@ -67,7 +67,7 @@ final class ApiTransport extends AbstractTransport
         $timezone = $this->header($email, MailerEmail::HEADER_TIMEZONE);
         // The API's `from` is the visible sender identity, which must match a verified sender —
         // not the envelope sender (Symfony resolves that as Sender ?? Return-Path ?? From).
-        $from = $this->firstAddress($email->getFrom()) ?? $envelope->getSender()->getAddress();
+        $from = $this->firstAddress($email->getFrom()) ?? $envelope->getSender()->toString();
         $replyTo = $this->firstAddress($email->getReplyTo());
         $attachments = $this->attachments($email);
 
@@ -91,7 +91,7 @@ final class ApiTransport extends AbstractTransport
             $address = $recipient->getAddress();
             $this->client->send(new ApiEmail(
                 from: $from,
-                to: $address,
+                to: $recipient->toString(),
                 templateId: $templateId,
                 data: $data,
                 metadata: $metadata,
@@ -120,13 +120,16 @@ final class ApiTransport extends AbstractTransport
     }
 
     /**
+     * Addresses as written, display name included: `To: Jane Doe <jane@example.com>` is how a person
+     * is addressed, and dropping the name here would quietly deliver mail without it.
+     *
      * @param array<Address> $addresses
      *
      * @return list<string>
      */
     private function addresses(array $addresses): array
     {
-        return array_map(static fn (Address $address): string => $address->getAddress(), $addresses);
+        return array_map(static fn (Address $address): string => $address->toString(), $addresses);
     }
 
     /**
@@ -134,7 +137,7 @@ final class ApiTransport extends AbstractTransport
      */
     private function firstAddress(array $addresses): ?string
     {
-        return isset($addresses[0]) ? $addresses[0]->getAddress() : null;
+        return isset($addresses[0]) ? $addresses[0]->toString() : null;
     }
 
     /**

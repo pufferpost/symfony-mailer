@@ -9,6 +9,7 @@ use PufferPost\Sdk\Client;
 use PufferPost\Symfony\ApiTransport;
 use PufferPost\Symfony\MailerEmail;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mime\Email;
@@ -74,6 +75,46 @@ final class ApiTransportTest extends TestCase
         $body = json_decode((string) $this->requests[0]['options']['body'], true);
         self::assertIsArray($body);
         self::assertSame('agent@acme.com', $body['from']);
+    }
+
+    public function testCarriesDisplayNamesOnEveryAddress(): void
+    {
+        $email = (new MailerEmail())
+            ->from(new Address('no-reply@acme.com', 'Acme Padel Club'))
+            ->to(new Address('jane@example.com', 'Jane Doe'))
+            ->cc(new Address('audit@acme.com', 'Acme Audit'))
+            ->bcc(new Address('archive@acme.com', 'Acme Archive'))
+            ->replyTo(new Address('support@acme.com', 'Acme Support'))
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome');
+
+        $this->transport()->send($email);
+
+        $body = json_decode((string) $this->requests[0]['options']['body'], true);
+        self::assertIsArray($body);
+        self::assertSame('"Acme Padel Club" <no-reply@acme.com>', $body['from']);
+        self::assertSame('"Jane Doe" <jane@example.com>', $body['to']);
+        self::assertSame(['"Acme Audit" <audit@acme.com>'], $body['cc']);
+        self::assertSame(['"Acme Archive" <archive@acme.com>'], $body['bcc']);
+        self::assertSame('"Acme Support" <support@acme.com>', $body['replyTo']);
+    }
+
+    public function testDerivesPerRecipientKeysFromTheAddressNotItsDisplayName(): void
+    {
+        // A key has to stay stable: renaming the person must not turn a retry into a new send.
+        $email = (new MailerEmail())
+            ->from('no-reply@acme.com')
+            ->to(new Address('jane@example.com', 'Jane Doe'), new Address('bob@example.com', 'Bob Loblaw'))
+            ->subject('Welcome')
+            ->text('Body')
+            ->templateId('tpl_welcome')
+            ->idempotencyKey('order-1');
+
+        $this->transport()->send($email);
+
+        self::assertSame('order-1:jane@example.com', $this->headerValue(0, 'Idempotency-Key'));
+        self::assertSame('order-1:bob@example.com', $this->headerValue(1, 'Idempotency-Key'));
     }
 
     public function testGivesEachRecipientItsOwnIdempotencyKey(): void

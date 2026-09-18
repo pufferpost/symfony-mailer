@@ -1,8 +1,10 @@
 # Sending email
 
 The transport maps a Symfony `Email` to the API. Native fields — `from`, `to`, `cc`, `bcc`,
-`reply-to`, `subject`, `html`, `text`, `attachments` — map straight through. One `POST /api/v1/messages`
-is sent per `To` recipient, each carrying the same cc/bcc.
+`reply-to`, `subject`, `html`, `text`, `attachments` — map straight through, display names included:
+`new Address('no-reply@acme.com', 'Acme Padel Club')` is sent as written, so the name reaches the
+recipient's inbox. One `POST /api/v1/messages` is sent per `To` recipient, each carrying the same
+cc/bcc.
 
 ## Drop-in: an ordinary email
 
@@ -73,7 +75,9 @@ verified sender. Setting a `Return-Path` or `Sender` header for bounce handling 
 
 The API dedupes on the recipient as well as the payload, so a single key cannot cover a fan-out.
 With more than one `To`, the transport derives a stable per-recipient key (`<your-key>:<address>`);
-a single recipient keeps your key verbatim. Retrying the same email replays correctly either way.
+a single recipient keeps your key verbatim. The key uses the bare address, never the display name,
+so renaming a recipient cannot turn a retry into a new send. Retrying the same email replays
+correctly either way.
 
 Provide a template **or** an inline subject + body, never both.
 
